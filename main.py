@@ -1,4 +1,5 @@
 import cv2
+import tkinter as tk
 from mediapipe.python.solutions import face_mesh
 
 mp_face_mesh = face_mesh
@@ -9,6 +10,47 @@ face_mesh = mp_face_mesh.FaceMesh(
 
 # Webcam
 cap = cv2.VideoCapture(0)
+
+
+# CURSOR WINDOW
+WIDTH = 1200
+HEIGHT = 700
+
+root = tk.Tk()
+root.title("EyeType AI Cursor")
+
+canvas = tk.Canvas(
+    root,
+    width=WIDTH,
+    height=HEIGHT,
+    bg="black",
+    highlightthickness=0
+)
+
+canvas.pack()
+
+cursor = canvas.create_oval(
+    WIDTH // 2 - 20,
+    HEIGHT // 2 - 20,
+    WIDTH // 2 + 20,
+    HEIGHT // 2 + 20,
+    fill="white"
+)
+
+def move_cursor(ratio):
+
+    x = int(ratio * WIDTH)
+
+    canvas.coords(
+        cursor,
+        x - 20,
+        HEIGHT // 2 - 20,
+        x + 20,
+        HEIGHT // 2 + 20
+    )
+
+    root.update()
+
 
 while True:
     success, frame = cap.read()
@@ -52,6 +94,9 @@ while True:
 
             ratio = (iris_x - left_x) / eye_width
 
+            ratio = max(0, min(1, ratio))
+            move_cursor(ratio)
+
             # Tune these thresholds later
             if ratio < 0.40:
                 gaze_text = "LEFT"
@@ -91,3 +136,4 @@ while True:
 
 cap.release()
 cv2.destroyAllWindows()
+root.destroy()
