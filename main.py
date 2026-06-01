@@ -8,7 +8,7 @@ face_mesh = mp_face_mesh.FaceMesh(
     max_num_faces=1
 )
 
-# Webcam.
+# Webcam
 cap = cv2.VideoCapture(0)
 
 
@@ -94,13 +94,25 @@ while True:
         if eye_width > 0:
 
             ratio = (iris_x - left_x) / eye_width
+            print(f"Ratio: {ratio:.2f}")
 
             ratio = max(0, min(1, ratio))
             smoothed_ratio = (
                      smoothed_ratio * 0.8
                      + ratio * 0.2
                      )
-            move_cursor(smoothed_ratio)
+            LEFT_LIMIT = 0.25
+            RIGHT_LIMIT = 0.75
+            normalized_ratio = (
+                     smoothed_ratio - LEFT_LIMIT
+                     ) / (
+                              RIGHT_LIMIT - LEFT_LIMIT
+                              )
+            normalized_ratio = max(
+                     0,
+                     min(1, normalized_ratio)
+                             )
+            move_cursor(normalized_ratio)
 
             # Tune these thresholds later
             if ratio < 0.40:
@@ -121,6 +133,16 @@ while True:
                 (255, 255, 255),
                 2
             )
+
+            cv2.putText(
+                    frame,
+                    f"Smooth: {smoothed_ratio:.2f}",
+                    (20, 120),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.8,
+                    (255, 255, 255),
+                    2
+                )
 
     cv2.putText(
         frame,
