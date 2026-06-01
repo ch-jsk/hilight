@@ -51,6 +51,7 @@ def move_cursor(ratio):
 
     root.update()
 
+smoothed_ratio = 0.5
 
 while True:
     success, frame = cap.read()
@@ -95,7 +96,11 @@ while True:
             ratio = (iris_x - left_x) / eye_width
 
             ratio = max(0, min(1, ratio))
-            move_cursor(ratio)
+            smoothed_ratio = (
+                     smoothed_ratio * 0.8
+                     + ratio * 0.2
+                     )
+            move_cursor(smoothed_ratio)
 
             # Tune these thresholds later
             if ratio < 0.40:
