@@ -8,7 +8,7 @@ face_mesh = mp_face_mesh.FaceMesh(
     max_num_faces=1
 )
 
-# Webcam
+# Webcam.
 cap = cv2.VideoCapture(0)
 
 
